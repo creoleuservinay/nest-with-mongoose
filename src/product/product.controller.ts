@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { RolesGuard } from 'src/guards/roles.guards';
 import { Product } from './product.model';
 import { ProductService } from './product.service';
 
 @Controller('products')
+@UseGuards(RolesGuard)
 export class ProductController {
   constructor(protected productService: ProductService) {}
 
@@ -15,8 +17,17 @@ export class ProductController {
     }
   }
 
+  @Get('greet')
+  async GetGreetMessage() {
+    return this.productService.returnGreet();
+  }
+
   @Get()
   async getAll() {
-    return this.productService.findAll();
+    try {
+      return this.productService.findAll();
+    } catch (error) {
+      throw new Error('Something wrong');
+    }
   }
 }
